@@ -85,8 +85,6 @@ downloadBtn.addEventListener("click", () => {
     link.click();
 });
 
-let model;
-
 async function loadAI() {
     model = await cocoSsd.load();
     console.log("AI Loaded");
