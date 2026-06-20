@@ -71,3 +71,116 @@ downloadBtn.addEventListener("click", () => {
 
     link.click();
 });
+
+let model;
+
+async function loadAI() {
+    model = await cocoSsd.load();
+    console.log("AI Loaded");
+}
+
+loadAI();
+});
+
+async function detectObjects(img){
+
+    const predictions =
+        await model.detect(img);
+
+    return predictions;
+}
+
+function findBestPosition(img, objects){
+
+    let footerY = img.height - 120;
+
+    if(objects.length > 0){
+
+        let lowest = 0;
+
+        objects.forEach(obj => {
+
+            const bottom =
+                obj.bbox[1] + obj.bbox[3];
+
+            if(bottom > lowest){
+                lowest = bottom;
+            }
+
+        });
+
+        if(lowest > img.height * 0.7){
+            footerY = 20;
+        }
+    }
+
+    return footerY;
+
+    function getAverageBrightness(
+    imageData
+){
+
+    let total = 0;
+
+    for(let i=0;i<imageData.data.length;i+=4){
+
+        const r = imageData.data[i];
+        const g = imageData.data[i+1];
+        const b = imageData.data[i+2];
+
+        total += (r+g+b)/3;
+    }
+
+    return total /
+        (imageData.data.length/4);
+    }
+}
+
+                           const objects =
+    await detectObjects(img);
+
+const footerY =
+    findBestPosition(
+        img,
+        objects
+    );
+
+const sample =
+    ctx.getImageData(
+        0,
+        footerY,
+        canvas.width,
+        100
+    );
+
+const brightness =
+    getAverageBrightness(sample);
+
+const textColor =
+    brightness > 140
+    ? "#000000"
+    : "#FFFFFF";
+
+ctx.fillStyle =
+    brightness > 140
+    ? "rgba(255,255,255,.6)"
+    : "rgba(0,0,0,.6)";
+
+ctx.fillRect(
+    0,
+    footerY,
+    canvas.width,
+    100
+);
+
+ctx.fillStyle = textColor;
+
+ctx.font = "36px Arial";
+
+ctx.textAlign = "center";
+
+ctx.fillText(
+    `${url} | WA ${wa}`,
+    canvas.width/2,
+    footerY+55
+);
