@@ -1,6 +1,20 @@
 // =========================
-// AI Footer Image Editor
+// Footer Image Generator
 // =========================
+
+let model = null;
+
+// Load AI Model
+async function loadAI() {
+    try {
+        model = await cocoSsd.load();
+        console.log("✅ AI Loaded");
+    } catch (err) {
+        console.error("❌ Gagal memuat AI:", err);
+    }
+}
+
+loadAI();
 
 // Ambil elemen HTML
 const imageInput = document.getElementById("imageInput");
@@ -40,33 +54,10 @@ waInput.addEventListener("input", () => {
 
 });
 
-// lanjutkan kode Anda yang sudah ada...
+// =========================
+// Deteksi Objek AI
+// =========================
 
-let model = null;
-
-// Load AI Model
-async function loadAI() {
-    try {
-        model = await cocoSsd.load();
-        console.log("✅ AI Loaded");
-    } catch (err) {
-        console.error("❌ Gagal memuat AI:", err);
-    }
-}
-
-loadAI();
-
-// Ambil elemen HTML
-const imageInput = document.getElementById("imageInput");
-const urlInput = document.getElementById("urlInput");
-const waInput = document.getElementById("waInput");
-const generateBtn = document.getElementById("generateBtn");
-const downloadBtn = document.getElementById("downloadBtn");
-
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-
-// Deteksi objek menggunakan AI
 async function detectObjects(img) {
 
     if (!model) {
@@ -81,37 +72,10 @@ async function detectObjects(img) {
     }
 }
 
-// Cari posisi footer terbaik
-function findBestPosition(img, objects) {
+// =========================
+// Hitung Kecerahan
+// =========================
 
-    let footerY = img.height - 100;
-
-    if (objects.length > 0) {
-
-        let lowestObject = 0;
-
-        objects.forEach(obj => {
-
-            const bottom =
-                obj.bbox[1] + obj.bbox[3];
-
-            if (bottom > lowestObject) {
-                lowestObject = bottom;
-            }
-
-        });
-
-        // Jika objek berada dekat bawah gambar
-        // pindahkan footer ke atas
-        if (lowestObject > img.height * 0.75) {
-            footerY = 20;
-        }
-    }
-
-    return footerY;
-}
-
-// Hitung tingkat kecerahan area
 function getAverageBrightness(imageData) {
 
     let total = 0;
@@ -128,7 +92,10 @@ function getAverageBrightness(imageData) {
     return total / (imageData.data.length / 4);
 }
 
-// Generate gambar
+// =========================
+// Generate Gambar
+// =========================
+
 generateBtn.addEventListener("click", () => {
 
     const file = imageInput.files[0];
@@ -175,21 +142,33 @@ generateBtn.addEventListener("click", () => {
                 canvas.height
             );
 
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(
+                img,
+                0,
+                0
+            );
 
-            // AI Detection
+            // Jalankan AI (opsional)
             const objects =
                 await detectObjects(img);
 
-            console.log(objects);
+            console.log(
+                "Objek terdeteksi:",
+                objects
+            );
 
-            const footerY =
-                findBestPosition(
-                    img,
-                    objects
+            // Footer selalu di bawah
+            const footerHeight =
+                Math.max(
+                    50,
+                    Math.round(
+                        img.height * 0.08
+                    )
                 );
 
-            const footerHeight = 100;
+            const footerY =
+                canvas.height -
+                footerHeight;
 
             // Ambil area footer
             const sample =
@@ -201,7 +180,9 @@ generateBtn.addEventListener("click", () => {
                 );
 
             const brightness =
-                getAverageBrightness(sample);
+                getAverageBrightness(
+                    sample
+                );
 
             const textColor =
                 brightness > 140
@@ -213,8 +194,9 @@ generateBtn.addEventListener("click", () => {
                     ? "rgba(255,255,255,0.65)"
                     : "rgba(0,0,0,0.65)";
 
-            // Footer background
-            ctx.fillStyle = bgColor;
+            // Background footer
+            ctx.fillStyle =
+                bgColor;
 
             ctx.fillRect(
                 0,
@@ -227,58 +209,88 @@ generateBtn.addEventListener("click", () => {
                 `${url} | WhatsApp: ${wa}`;
 
             // Auto resize font
-            let fontSize = 36;
+            let fontSize =
+                Math.round(
+                    footerHeight * 0.35
+                );
 
             ctx.font =
                 `${fontSize}px Arial`;
 
             while (
-                ctx.measureText(text).width >
-                canvas.width - 30 &&
+                ctx.measureText(
+                    text
+                ).width >
+                    canvas.width - 20 &&
                 fontSize > 12
             ) {
                 fontSize--;
+
                 ctx.font =
                     `${fontSize}px Arial`;
             }
 
-            ctx.fillStyle = textColor;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
+            // Tulis teks
+            ctx.fillStyle =
+                textColor;
+
+            ctx.textAlign =
+                "center";
+
+            ctx.textBaseline =
+                "middle";
 
             ctx.fillText(
                 text,
                 canvas.width / 2,
-                footerY + footerHeight / 2
+                footerY +
+                    footerHeight / 2
             );
 
-            downloadBtn.style.display = "block";
+            downloadBtn.style.display =
+                "block";
         };
 
-        img.onerror = function () {
-            alert("Gagal membaca gambar");
+        img.onerror =
+            function () {
+
+            alert(
+                "Gagal membaca gambar"
+            );
+
         };
 
-        img.src = e.target.result;
+        img.src =
+            e.target.result;
     };
 
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(
+        file
+    );
 });
 
-// Download hasil
-downloadBtn.addEventListener("click", () => {
+// =========================
+// Download Hasil
+// =========================
 
-    const link =
-        document.createElement("a");
+downloadBtn.addEventListener(
+    "click",
+    () => {
 
-    link.download =
-        "hasil-footer-ai.png";
+        const link =
+            document.createElement(
+                "a"
+            );
 
-    link.href =
-        canvas.toDataURL(
-            "image/png",
-            1.0
-        );
+        link.download =
+            "hasil-footer-ai.png";
 
-    link.click();
-});
+        link.href =
+            canvas.toDataURL(
+                "image/png",
+                1.0
+            );
+
+        link.click();
+    }
+);
