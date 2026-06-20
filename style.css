@@ -144,3 +144,30 @@ canvas {
 button:active {
     transform: scale(0.98);
 }
+.footer-donate{
+    margin:30px 0;
+}
+
+.footer-donate a{
+    position:relative;
+    display:inline-block;
+}
+
+.footer-donate img{
+    width:120px;
+    border-radius:8px;
+}
+
+.footer-donate span{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:rgba(0,0,0,.5);
+    color:white;
+    padding:4px 8px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:bold;
+}
+
