@@ -2,6 +2,46 @@
 // AI Footer Image Editor
 // =========================
 
+// Ambil elemen HTML
+const imageInput = document.getElementById("imageInput");
+const urlInput = document.getElementById("urlInput");
+const waInput = document.getElementById("waInput");
+const generateBtn = document.getElementById("generateBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+// =========================
+// Simpan URL & WhatsApp Permanen
+// =========================
+
+urlInput.value =
+    localStorage.getItem("footer_url") || "";
+
+waInput.value =
+    localStorage.getItem("footer_wa") || "";
+
+urlInput.addEventListener("input", () => {
+
+    localStorage.setItem(
+        "footer_url",
+        urlInput.value.trim()
+    );
+
+});
+
+waInput.addEventListener("input", () => {
+
+    localStorage.setItem(
+        "footer_wa",
+        waInput.value.trim()
+    );
+
+});
+
+// lanjutkan kode Anda yang sudah ada...
+
 let model = null;
 
 // Load AI Model
