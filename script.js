@@ -1,3 +1,16 @@
+let model = null;
+
+async function loadAI() {
+    try {
+        model = await cocoSsd.load();
+        console.log("AI berhasil dimuat");
+    } catch (err) {
+        console.error("Gagal memuat AI", err);
+    }
+}
+
+loadAI();
+
 const imageInput = document.getElementById("imageInput");
 const urlInput = document.getElementById("urlInput");
 const waInput = document.getElementById("waInput");
