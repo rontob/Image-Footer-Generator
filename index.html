@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Footer Image Editor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>AI Footer Image Editor</h1>
+
+    <input type="file" id="imageInput" accept="image/*">
+
+    <input
+        type="text"
+        id="urlInput"
+        placeholder="Masukkan URL Website">
+
+    <input
+        type="text"
+        id="waInput"
+        placeholder="Masukkan Nomor WhatsApp">
+
+    <button id="generateBtn">
+        Generate Gambar
+    </button>
+
+    <canvas id="canvas"></canvas>
+
+    <button id="downloadBtn" style="display:none;">
+        Download Hasil
+    </button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
